@@ -18,10 +18,10 @@ from django.contrib import admin
 from django.urls import path
 from django.conf import settings
 from django.conf.urls.static import static
-from mp3manager.views import MP3UploadAPIView
+from audiomanager.views import AudioUploadAPIView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/upload/', MP3UploadAPIView.as_view(), name='mp3_upload'),
+    path('api/upload/', AudioUploadAPIView.as_view(), name='audio_upload'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

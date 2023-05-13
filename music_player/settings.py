@@ -41,8 +41,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'audiomanager',
     'rest_framework',
-    'mp3manager',
 ]
 
 MIDDLEWARE = [
