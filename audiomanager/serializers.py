@@ -4,7 +4,7 @@ from .models import AudioFile
 class AudioUploadSerializer(serializers.ModelSerializer):
     class Meta:
         model = AudioFile
-        fields = ['audio_file']
+        fields = ['audio_file', 'title', 'runtime', 'artist']
 
     def create(self, validated_data):
         audio_file = validated_data['audio_file']
