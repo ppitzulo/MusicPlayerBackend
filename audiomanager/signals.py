@@ -5,6 +5,9 @@ from django.dispatch import receiver
 from .models import AudioFile
 from mutagen import File
 from datetime import timedelta
+import os
+import eyed3
+from django.conf import settings
 
 @receiver(post_save, sender=AudioFile)
 def extract_metadata(sender, instance, created, **kwargs):
@@ -22,7 +25,26 @@ def extract_metadata(sender, instance, created, **kwargs):
         instance.runtime = timedelta(seconds=duration_seconds)
         if 'artist' in audio:
             instance.artist = audio['artist'][0]
+
+        instance.thumbnail = extract_thumbnail(file_path)
         # ...
 
         # Save the model instance with the extracted metadata
         instance.save()
+
+
+def extract_thumbnail(audio_file_path):
+    audio = eyed3.load(audio_file_path)
+    thumbnail_path = settings.MEDIA_ROOT, "thumbnails/" + os.path.basename(audio_file_path).split('.')[0] + '.jpg'
+
+    if audio.tag and audio.tag.images:
+        for image in audio.tag.images:
+            # Get the image data
+            image_data = image.image_data
+            print(audio_file_path)
+            # Save the image to a file
+            with open(os.path.join(thumbnail_path, "wb")) as f:
+                f.write(image_data)
+
+            # Exit the loop after finding the first thumbnail
+            return 
