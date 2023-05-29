@@ -35,16 +35,18 @@ def extract_metadata(sender, instance, created, **kwargs):
 
 def extract_thumbnail(audio_file_path):
     audio = eyed3.load(audio_file_path)
-    thumbnail_path = settings.MEDIA_ROOT, "thumbnails/" + os.path.basename(audio_file_path).split('.')[0] + '.jpg'
+    # Convert the filename extension to .jpg
+    thumbnail_filename = os.path.basename(audio_file_path).split('.')[0] + '.jpg'
+    thumbnail_url = "thumbnails/" + thumbnail_filename
+    thumbnail_path = os.path.join(settings.MEDIA_ROOT, "thumbnails/" + thumbnail_filename)
 
     if audio.tag and audio.tag.images:
         for image in audio.tag.images:
             # Get the image data
             image_data = image.image_data
-            print(audio_file_path)
             # Save the image to a file
-            with open(os.path.join(thumbnail_path, "wb")) as f:
+            with open(thumbnail_path, "wb") as f:
                 f.write(image_data)
 
             # Exit the loop after finding the first thumbnail
-            return 
+            return thumbnail_url
