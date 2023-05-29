@@ -3,7 +3,6 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from .models import AudioFile
-from mutagen import File
 from datetime import timedelta
 import os
 import eyed3
@@ -16,15 +15,18 @@ def extract_metadata(sender, instance, created, **kwargs):
 
         # Get the file path
         file_path = instance.audio_file.path
-        audio = File(file_path)
+        # audio = File(file_path)
+        audio = eyed3.load(file_path)
 
         # Extract metadata from the audio file using the file path
         # if 'length' in audio:
-        duration_seconds = int(audio.info.length)
+        duration_seconds = int(audio.info.time_secs)
 
         instance.runtime = timedelta(seconds=duration_seconds)
-        if 'artist' in audio:
-            instance.artist = audio['artist'][0]
+        # print(audio['artist'])
+        if audio.tag.artist is not None:
+            instance.artist = audio.tag.artist
+            # instance.artist = audio['artist'][0]
 
         instance.thumbnail = extract_thumbnail(file_path)
         # ...
