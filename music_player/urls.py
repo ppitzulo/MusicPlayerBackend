@@ -24,5 +24,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/upload/', AudioUploadAPIView.as_view(), name='audio_upload'),
     path('api/list-songs', AudioAPIView.as_view(), name='audio_fetch'),
+    path('api/search/', SearchView.as_view(), name="audio_search"),
+    path('api/csrf-token', CSRFTokenAPIView.as_view(), name='csrf_token'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

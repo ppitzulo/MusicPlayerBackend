@@ -7,7 +7,7 @@ import os
 
 # Create your models here.
 class AudioFile(models.Model):
-    audio_file = models.FileField(upload_to='audio/')
+    url = models.FileField(upload_to='audio/')
     title = models.CharField(max_length=255, default="Untitled")
     thumbnail = models.ImageField(upload_to="thumbnails/", blank=True, null=True)
     runtime = models.CharField(max_length=10, default="0:00")
@@ -16,25 +16,22 @@ class AudioFile(models.Model):
 
     def save(self, *args, **kwargs):
        
-        if self.audio_file:
-            self.title = self.audio_file.name.split('.')[0]
+        if self.url:
+            self.title = self.url.name.split('.')[0]
         super().save(*args, **kwargs)
         
         # Get the file path
-        file_path = self.audio_file.path
+        file_path = self.url.path
         audio = eyed3.load(file_path)
 
         if audio.info is not None:
             # Extract metadata from the audio file using the file path
-
             self.runtime = self.format_runtime(int(audio.info.time_secs))
             if audio.tag.artist is not None:
                 self.artist = audio.tag.artist
 
             self.thumbnail = extract_thumbnail(file_path)
-            # ...
 
-            # Save the model instance with the extracted metadata
             super().save(*args, **kwargs)
             
     def format_runtime(self, runtime):
@@ -58,9 +55,7 @@ def extract_thumbnail(audio_file_path):
 
     if audio.tag and audio.tag.images:
         for image in audio.tag.images:
-            # Get the image data
             image_data = image.image_data
-            # Save the image to a file
             with open(thumbnail_path, "wb") as f:
                 f.write(image_data)
 
