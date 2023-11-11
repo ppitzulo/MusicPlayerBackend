@@ -1,0 +1,13 @@
+asgiref==3.7.2
+coverage==5.5
+deprecation==2.1.0
+Django==4.2.7
+django-cors-headers==4.3.0
+djangorestframework==3.14.0
+eyed3==0.9.7
+filetype==1.2.0
+packaging==23.2
+Pillow==10.1.0
+pytz==2023.3.post1
+sqlparse==0.4.4
+toml==0.10.2
