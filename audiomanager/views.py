@@ -4,9 +4,13 @@ from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework import filters
 from django.middleware.csrf import get_token
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from .serializers import AudioUploadSerializer
+from django.core.paginator import Paginator
+from django.db import models
 from .models import AudioFile
+import os
+from django.conf import settings
 
 class AudioUploadAPIView(APIView):
     def post(self, request):
@@ -22,9 +26,29 @@ class AudioUploadAPIView(APIView):
             return JsonResponse({'message': 'Files uploaded successfully'})
         return JsonResponse({'error': 'Invalid request method'})
 
-class AudioAPIView(ListAPIView):
-    queryset = AudioFile.objects.all()
-    serializer_class = AudioUploadSerializer
+class AudioAPIView(APIView):
+    def get(self, request):
+        queryset = AudioFile.objects.all()
+        paginator = Paginator(queryset, 20)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+
+        if page_number and int(page_number) > paginator.num_pages:
+            return Response([])
+
+        serializer = AudioUploadSerializer(page_obj, many=True, context={'request': request})
+
+        return Response(serializer.data)
+
+class AudioAPITest(APIView):
+    def get(self, request, song_id):
+
+        song = AudioFile.objects.get(id=song_id)
+        song_data = song.url.path
+        with open(song_data, "rb") as file:
+            response = HttpResponse(file.read(), content_type="audio/mpeg")
+        return response
+        
 
 class CSRFTokenAPIView(APIView):
     def get(self, request):

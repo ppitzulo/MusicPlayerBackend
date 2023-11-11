@@ -23,7 +23,8 @@ from audiomanager.views import *
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/upload/', AudioUploadAPIView.as_view(), name='audio_upload'),
-    path('api/list-songs', AudioAPIView.as_view(), name='audio_fetch'),
+    path('api/list-songs/', AudioAPIView.as_view(), name='audio_fetch'),
+    path('api/audio/<int:song_id>/', AudioAPITest.as_view(), name='audioAPITest'),
     path('api/search/', SearchView.as_view(), name="audio_search"),
     path('api/csrf-token', CSRFTokenAPIView.as_view(), name='csrf_token'),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
