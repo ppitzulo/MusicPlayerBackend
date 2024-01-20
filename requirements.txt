@@ -8,6 +8,7 @@ eyed3==0.9.7
 filetype==1.2.0
 packaging==23.2
 Pillow==10.1.0
+python-dotenv==1.0.0
 pytz==2023.3.post1
 sqlparse==0.4.4
 toml==0.10.2
