@@ -1,9 +1,11 @@
 media
 db.sqlite3
-testaudio
 output
 *.mp3
 *.opus
 *.ogg
 *.pyc
 .env
+music
+.venv
+.vscode
