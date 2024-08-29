@@ -16,27 +16,71 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+# Quick-start development settings - unsuitable for production
+# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
+
+
+# SECURITY WARNING: don't run with debug turned on in production!
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-print(BASE_DIR)
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 MEDIA_URL = '/media/'
 
-DEMO_MODE = os.getenv('DEMO_MODE', 'False') == 'True'
+ENVIRONMENT = os.getenv('PROD', 'False') == 'True'
+UPLOADS_ENABLED = os.getenv('UPLOADS_ENABLED', 'False') == 'True'
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.getenv('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = ["*"]
+if (ENVIRONMENT == "PROD"):
+    print("Running in production")
+    CORS_ALLOW_ALL_ORIGINS = False
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:8000",
+        "http://173.91.222.106:3000",
+    ]
+    SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY_DEMO')
+    DEBUG = False
+    ALLOWED_HOSTS = ["localhost"] # TODO: Add the IP address of the server when the frontend is deployed
 
-CORS_ALLOW_ALL_ORIGINS = True
+    # Disable options related to SSL for now, until it is configured
+    SECURE_SSL_REDIRECT = False
+    SESSION_COOKIE_SECURE = False
+    CSRF_COOKIE_SECURE = False
+    SECURE_HSTS_SECONDS = 0  # Set to 0 to disable HSTS
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = False
+    SECURE_HSTS_PRELOAD = False
+    
+    # Database
+    # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('DB_NAME'),
+            'USER': os.environ.get('DB_USER'),
+            'PASSWORD': os.environ.get('DB_PASSWORD'),
+            'HOST': os.getenv('DB_HOST', 'db'),
+            'PORT': os.getenv('DB_PORT', '5432'),
+        }
+    }
+else:
+    print("Running in development mode")
+    CORS_ALLOW_ALL_ORIGINS = True
+    DEBUG = True
+    ALLOWED_HOSTS = ["*"]
+    SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY_DEV')
+    DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
 # Application definition
 
@@ -82,17 +126,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'music_player.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 
 
 # Password validation

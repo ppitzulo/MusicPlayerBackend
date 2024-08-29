@@ -1,9 +1,35 @@
-version: '3.8'
-
 services:
-  django:
-    image: django-docker:0.0.1
-    build: .
+  db:
+    image: postgres:14
+    environment:
+      - POSTGRES_USER=MusicPlayerUser
+      - POSTGRES_PASSWORD=Chippy
+      - POSTGRES_DB=MusicPlayerBackend
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
     ports:
-      - "8000:8000"
-    # network_mode: "host"
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5432"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  django:
+    build: .
+    command: sh -c "python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/music_player
+    ports:
+      - "8008:8000"
+    depends_on:
+      - db
+    restart: on-failure
+    environment:
+      - UPLOADS_ENABLED=False
+    env_file:
+      - ./.env
+    user: "1000:1000"
+  
+volumes:
+  postgres_data:

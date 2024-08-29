@@ -28,7 +28,7 @@ urlpatterns = [
     path('api/search/', SearchView.as_view(), name="audio_search"),
 ]
 
-if not settings.DEMO_MODE:
+if settings.UPLOADS_ENABLED:
     urlpatterns += [
         path('api/upload/', AudioUploadAPIView.as_view(), name='audio_upload'),
     ]
