@@ -51,8 +51,12 @@ def extract_thumbnail(audio_file_path):
     # Convert the filename extension to .jpg
     thumbnail_filename = os.path.basename(audio_file_path).split('.')[0] + '.jpg'
     thumbnail_url = "thumbnails/" + thumbnail_filename
-    thumbnail_path = os.path.join(settings.MEDIA_ROOT, "thumbnails/" + thumbnail_filename)
+    thumbnail_path = os.path.join(settings.MEDIA_ROOT, thumbnail_url)
 
+    # Create the thumbnails directory if it doesn't exist
+    os.makedirs(os.path.join(settings.MEDIA_ROOT, "thumbnails"), exist_ok=True)
+
+    # Check if the audio file has a thumbnail
     if audio.tag and audio.tag.images:
         for image in audio.tag.images:
             image_data = image.image_data
