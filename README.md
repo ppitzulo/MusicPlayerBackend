@@ -16,6 +16,7 @@ This is the backend repository for my music player project. The backend is built
 - Manages and serves music-related data.
 - Supports pagination for efficient data retrieval.
 - Dockerized for easy deployment and development.
+- Automatically extracts the runtime and thumbnail from the metadata of the MP3 for later retrieval.
 
 ## Getting Started
 
@@ -34,13 +35,26 @@ Before you begin, ensure you have the following installed:
    git clone https://github.com/your-username/music-player-backend.git
    cd music-player-backend
    ```
-2. Create a `.env` file in the project root and set `DJANGO_SECRET_KEY` to a random key
+2. Create a `.env` file in the project root and set `DJANGO_SECRET_KEY_DEMO` as well as `DJANGO_SECRET_KEY_DEV` to a random key
 3. Now build and run the docker container
    ``` bash
    docker-compose up --build
    ```
-4. The API can be accessed at http://localhost:8000
 
+The API can be accessed at:
+* For local development:
+  - `http://localhost:8000` (non-SSL)
+  - `https://localhost:8000` (SSL with a self-signed certificate)
+
+- For production:
+  - `https://your-domain.com` (replace `your-domain.com` with your actual domain)
+## Docker Setup
+
+This project uses Docker Compose to manage several services.
+* **db**: A PostgreSQL database service
+* **web**: The Django application being served through gunicorn.
+* **nginx**: A Nginx service acting as a reverse proxy.
+* **certbot**: A Certbot service for managing SSL certificates.
    
 ## API Endpoints
 
