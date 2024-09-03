@@ -15,21 +15,55 @@ services:
       timeout: 10s
       retries: 5
 
-  django:
+  web:
     build: .
-    command: sh -c "python manage.py runserver 0.0.0.0:8000"
+    command: gunicorn music_player.wsgi:application --bind 0.0.0.0:8000 --access-logfile '-' --error-logfile '-'
     volumes:
       - .:/music_player
+      - ./media:/music_player/media
     ports:
-      - "8008:8000"
+      - "8000:8000"
     depends_on:
       - db
     restart: on-failure
     environment:
       - UPLOADS_ENABLED=False
+      - PROD=True
+      - DB_NAME=MusicPlayerBackend
+      - DB_USER=MusicPlayerUser
+      - DB_PASSWORD=Chippy
+      - DB_HOST=db
+      - DB_PORT=5432
     env_file:
       - ./.env
     user: "1000:1000"
-  
+
+  nginx:
+    image: nginx:alpine
+    ports:
+    - "80:80"
+    - "443:443"
+    volumes:
+    - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    - ./static:/usr/src/app/static
+    - ./media:/music_player/media
+    - ./certbot/www/:/var/www/certbot
+    - ./certbot/conf:/etc/letsencrypt
+    depends_on:
+    - web
+
+  certbot:
+    image: certbot/certbot
+    volumes:
+      - ./certbot/conf:/etc/letsencrypt
+      - ./certbot/www:/var/www/certbot
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+    command: certonly --webroot -w /var/www/certbot -d vergil.8261958.xyz --email pongopeter826@mail.com --agree-tos --no-eff-email --force-renewal
+    user: root
+    
+
+
+
 volumes:
   postgres_data:
+  media:

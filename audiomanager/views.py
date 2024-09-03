@@ -1,18 +1,16 @@
 from rest_framework.views import APIView
-from rest_framework.generics import ListAPIView
 from rest_framework.response import Response
-from rest_framework import generics
-from rest_framework import filters
-from django.middleware.csrf import get_token
-from django.http import JsonResponse, HttpResponse
-from .serializers import AudioUploadSerializer
+from rest_framework import generics, filters
 from django.core.paginator import Paginator
-from django.db import models
+from django.http import JsonResponse, HttpResponse
+from django.middleware.csrf import get_token
+from django.views.decorators.csrf import csrf_protect
+from django.utils.decorators import method_decorator
+from .serializers import AudioUploadSerializer
 from .models import AudioFile
-import os
-from django.conf import settings
 
 class AudioUploadAPIView(APIView):
+    @method_decorator(csrf_protect)
     def post(self, request):
         if request.method == 'POST':
             files = request.FILES.getlist('files')
@@ -28,7 +26,8 @@ class AudioUploadAPIView(APIView):
 
 class AudioAPIView(APIView):
     def get(self, request):
-        queryset = AudioFile.objects.all()
+        queryset = AudioFile.objects.all().order_by('id')
+        # queryset = AudioFile.objects.all()
         paginator = Paginator(queryset, 20)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
@@ -48,13 +47,16 @@ class AudioAPITest(APIView):
         with open(song_data, "rb") as file:
             response = HttpResponse(file.read(), content_type="audio/mpeg")
         return response
-        
 
 class CSRFTokenAPIView(APIView):
     def get(self, request):
-        token = get_token(request)
-        return Response({'csrfToken': token})
-    
+        return Response({'csrfToken': get_token(request)})
+#
+# class CSRFTokenAPIView(APIView):
+#     def get(self, request):
+#         token = get_token(request)
+#         return Response({'csrfToken': token})
+#     
 class SearchView(generics.ListCreateAPIView):
     search_fields = ['artist', 'title']
     filter_backends = (filters.SearchFilter,)

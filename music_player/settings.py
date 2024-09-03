@@ -19,40 +19,53 @@ load_dotenv()
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
-
-# SECURITY WARNING: don't run with debug turned on in production!
-
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 MEDIA_URL = '/media/'
 
+
 ENVIRONMENT = os.getenv('PROD', 'False') == 'True'
+print(ENVIRONMENT)
 UPLOADS_ENABLED = os.getenv('UPLOADS_ENABLED', 'False') == 'True'
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
+# Configure CSRF settings
+CSRF_COOKIE_NAME = "csrftoken"
+CSRF_HEADER_NAME = "HTTP_X_CSRFTOKEN"
+CSRF_COOKIE_SAMESITE = 'Lax'
+CSRF_COOKIE_SECURE = False
+CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = [
+    'autorization',
+    'content-type',
+    'x-csrftoken',
+]
+CSRF_TRUSTED_ORIGINS = [
+    "http://localhost:8000",
+    "http://localhost:5173",
+    "http://localhost:5174",
+    "http://173.91.222.106",
+    "https://173.91.222.106",
+]
 
-# SECURITY WARNING: keep the secret key used in production secret!
-
-# SECURITY WARNING: don't run with debug turned on in production!
-
-if (ENVIRONMENT == "PROD"):
+if (ENVIRONMENT):
     print("Running in production")
+    DEBUG = False
     CORS_ALLOW_ALL_ORIGINS = False
     CORS_ALLOWED_ORIGINS = [
         "http://localhost:8000",
-        "http://173.91.222.106:3000",
+        "http://198.23.196.50:8008",
+        "http:/173.91.222.106:8000",
+        "http://vergil.8261958.xyz:8000",
+        "https://ppitzulo.github.io",
     ]
     SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY_DEMO')
-    DEBUG = False
-    ALLOWED_HOSTS = ["localhost"] # TODO: Add the IP address of the server when the frontend is deployed
+    ALLOWED_HOSTS = ["localhost", "198.23.196.50", "vergil.8261958.xyz", "https://ppitzulo.github.io/MusicPlayerFrontend/"] # TODO: Add the IP address of the server when the frontend is deployed
 
     # Disable options related to SSL for now, until it is configured
     SECURE_SSL_REDIRECT = False
     SESSION_COOKIE_SECURE = False
-    CSRF_COOKIE_SECURE = False
     SECURE_HSTS_SECONDS = 0  # Set to 0 to disable HSTS
     SECURE_HSTS_INCLUDE_SUBDOMAINS = False
     SECURE_HSTS_PRELOAD = False
@@ -163,6 +176,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
 STATIC_URL = 'static/'
+
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field

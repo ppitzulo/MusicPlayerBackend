@@ -5,7 +5,9 @@ output
 *.opus
 *.ogg
 *.pyc
+*.sh
 .env
 music
 .venv
 .vscode
+certbot
